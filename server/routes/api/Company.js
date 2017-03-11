@@ -1,9 +1,9 @@
 'use strict';
 
 var router = require('express').Router();
-var request = require('request');
+// var request = require('request');
 
-var HttpError = require('../utils/HttpError');
+// var HttpError = require('../utils/HttpError');
 var Company = require('../../db/company');
 
 router.get('/companies', function(req, res, next){
@@ -11,9 +11,5 @@ router.get('/companies', function(req, res, next){
   .then(companies => res.send(companies))
   .catch(next)
 })
-
-router.get('/', function (req, res, next) {
-
-});
 
 module.exports = router;
