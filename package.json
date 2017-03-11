@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --display-error-details",
-    "start": "webpack -w & nodemon server.js"
+    "start": "webpack -w & nodemon ./server/routes"
   },
   "keywords": [],
   "author": "",

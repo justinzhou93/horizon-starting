@@ -86,10 +86,6 @@
 	
 	/* -----------------  THUNK ACTION CREATORS   ------------------ */
 	
-	console.log(_homeContainer2.default);
-	console.log(_App2.default);
-	console.log(_singleDetailContainer2.default);
-	
 	_reactDom2.default.render(_react2.default.createElement(
 	  _reactRedux.Provider,
 	  { store: _store2.default },
@@ -99,8 +95,9 @@
 	    _react2.default.createElement(
 	      _reactRouter.Route,
 	      { path: '/', component: _App2.default, onEnter: fetchInitialData },
-	      _react2.default.createElement(_reactRouter.IndexRoute, { component: _homeContainer2.default }),
-	      _react2.default.createElement(_reactRouter.Route, { path: '/:companyId', component: _singleDetailContainer2.default })
+	      _react2.default.createElement(_reactRouter.IndexRedirect, { to: 'companies' }),
+	      _react2.default.createElement(_reactRouter.Route, { path: '/companies', component: _homeContainer2.default, onEnter: fetchInitialData }),
+	      _react2.default.createElement(_reactRouter.Route, { path: '/companies/:companyId', component: _singleDetailContainer2.default })
 	    )
 	  )
 	), document.getElementById('app'));
@@ -23352,6 +23349,7 @@
 	    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialProductState;
 	    var action = arguments[1];
 	
+	    console.log('hello, inside of reducer');
 	    var newState = Object.assign({}, state);
 	
 	    switch (action.type) {
@@ -23361,7 +23359,7 @@
 	            break;
 	
 	        case _company.SET_COMPANIES:
-	            newState.currentProduct = action.currentProduct;
+	            newState.companies = action.companies;
 	            break;
 	
 	        default:
@@ -23375,8 +23373,16 @@
 	
 	/** Initial State */
 	var initialProductState = {
-	    companies: [], //array of companies, which will be objects
-	    currentCompany: {}
+	    companies: [{
+	        name: 'Apple',
+	        ticker: 'APPL',
+	        words: { 'hi': 1, 'hello': 10, 'bye': 3 }
+	    }, {
+	        name: 'Google',
+	        ticker: 'GOOG',
+	        words: { 'i': 1, 'am': 14, "so": 20, 'tired': 100 }
+	    }], //array of companies, which will be objects
+	    currentCompany: null
 	};
 	
 	/** Products reducer */
@@ -23425,18 +23431,17 @@
 	// load all products
 	var GetCompanies = exports.GetCompanies = function GetCompanies() {
 	    return function (dispatch) {
-	        console.log('first thnuk');
-	        // axios.get('/api/articles/companies')
-	        //     .then((companies => companies.data))
-	        //     .then(companies => dispatch(settingCurrentCompany(companies)))
-	        //     .then();
+	        _axios2.default.get('/api/articles/companies').then(function (companies) {
+	            return companies.data;
+	        }).then(function (companies) {
+	            return dispatch(settingCompanies(companies));
+	        }).then();
 	    };
 	};
 	
 	// loads single product
 	var loadSingleCompanyInfo = exports.loadSingleCompanyInfo = function loadSingleCompanyInfo() {
 	    return function (dispatch) {
-	        console.log('second thnuk');
 	        // TODO ACTION THUNK CREATOR NEEDED
 	        // axios.get()
 	        //     .then((res => res.data))
@@ -31421,12 +31426,15 @@
 	  _createClass(Home, [{
 	    key: 'render',
 	    value: function render() {
+	      var _this2 = this;
+	
 	      return _react2.default.createElement(
 	        'div',
 	        { className: 'wrapper' },
 	        this.props.companies && this.props.companies.map(function (company) {
+	          var self = _this2;
 	          return _react2.default.createElement('singleCompany', { key: company.id, company: company, handleSelect: function handleSelect() {
-	              this.props.selectingCompany(this.props.currentCompany, company);
+	              self.props.selectingCompany(self.props.currentCompany, company);
 	            }
 	          });
 	        })
@@ -31438,13 +31446,16 @@
 	}(_react2.default.Component);
 	
 	var mapStateToProps = function mapStateToProps(state) {
-	  return { currentCompany: state.currentCompany };
+	  return {
+	    currentCompany: state.company.currentCompany,
+	    companies: state.company.companies
+	  };
 	};
 	
 	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 	  return {
 	    selectingCompany: function selectingCompany(currentCompany, newCompany) {
-	      return dispatch((0, _company.selectCompany)(currentCompany, newCompany));
+	      return dispatch((0, _company.settingCurrentCompany)(currentCompany, newCompany));
 	    }
 	  };
 	};
@@ -31486,7 +31497,7 @@
 	"use strict";
 	
 	Object.defineProperty(exports, "__esModule", {
-	    value: true
+	  value: true
 	});
 	
 	var _react = __webpack_require__(1);
@@ -31496,12 +31507,13 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	exports.default = function (_ref) {
-	    var children = _ref.children;
-	    return _react2.default.createElement(
-	        "div",
-	        { id: "main" },
-	        children
-	    );
+	  var children = _ref.children;
+	
+	  return _react2.default.createElement(
+	    "div",
+	    { id: "main" },
+	    children
+	  );
 	};
 
 /***/ },
@@ -31515,14 +31527,12 @@
 	});
 	
 	exports.default = function (props) {
-	
-	  return 'hi';
-	  // return (
-	  //   <div>
-	  //     <wordCloud words={props.currentCompany.words} />
-	  //     <stockTracker ticker={props.currentCompany.ticker} />
-	  //   </div>
-	  // );
+	  return _react2.default.createElement(
+	    'div',
+	    null,
+	    _react2.default.createElement('wordCloud', { words: props.currentCompany.words }),
+	    _react2.default.createElement('stockTracker', { ticker: props.currentCompany.ticker })
+	  );
 	};
 	
 	var _react = __webpack_require__(1);
@@ -31550,7 +31560,6 @@
 /* 310 */
 /***/ function(module, exports) {
 
-	// import Canvas from 'canvas';
 	// import React from 'react';
 	// import d3 from 'd3';
 	//
@@ -31558,7 +31567,7 @@
 	//   "Hello", "world", "normally", "you", "want", "more", "words",
 	//   "than", "this"]
 	//
-	// var cloud = d3.layout.cloud()
+	// var cloud = d3.cloud()
 	//     .size([500, 500])
 	//     .words(words.map(function(d) {
 	//       return {text: d, size: 10 + Math.random() * 90, test: "haha"};

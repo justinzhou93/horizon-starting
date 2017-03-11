@@ -1,4 +1,3 @@
-// import Canvas from 'canvas';
 // import React from 'react';
 // import d3 from 'd3';
 //
@@ -6,7 +5,7 @@
 //   "Hello", "world", "normally", "you", "want", "more", "words",
 //   "than", "this"]
 //
-// var cloud = d3.layout.cloud()
+// var cloud = d3.cloud()
 //     .size([500, 500])
 //     .words(words.map(function(d) {
 //       return {text: d, size: 10 + Math.random() * 90, test: "haha"};

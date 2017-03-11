@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import singleCompany from '../components/singleCompany';
-import {selectCompany} from '../action-creators/company';
+import {settingCurrentCompany} from '../action-creators/company';
 
 export class Home extends React.Component {
   constructor(props){
@@ -12,14 +12,17 @@ export class Home extends React.Component {
     return (
       <div className="wrapper">
         {
-          this.props.companies && this.props.companies.map(company =>
-            <singleCompany key={company.id} company={company} handleSelect={
+          this.props.companies && this.props.companies.map(company => {
+            var self = this;
+            return (
+              <singleCompany key={company.id} company={company} handleSelect={
                 function(){
-                  this.props.selectingCompany(this.props.currentCompany, company)
+                  self.props.selectingCompany(self.props.currentCompany, company)
                 }
               }
-            />
-          )
+              />
+            )
+          })
         }
       </div>
     );
@@ -27,11 +30,16 @@ export class Home extends React.Component {
 
 }
 
-const mapStateToProps = state => ({currentCompany: state.currentCompany});
+const mapStateToProps = state => {
+  return {
+    currentCompany: state.company.currentCompany,
+    companies: state.company.companies
+  };
+}
 
 const mapDispatchToProps = dispatch => {
     return {
-        selectingCompany: (currentCompany, newCompany) => (dispatch(selectCompany(currentCompany, newCompany)))
+        selectingCompany: (currentCompany, newCompany) => (dispatch(settingCurrentCompany(currentCompany, newCompany)))
     };
 };
 

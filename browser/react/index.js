@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import store from './store';
 import { connect } from 'react-redux';
-import {Router, Route, IndexRoute, browserHistory} from 'react-router';
+import {Router, Route, IndexRedirect, browserHistory} from 'react-router';
 
 /* -----------------   IMPORTED COMPONENTS   ------------------ */
 
@@ -20,16 +20,13 @@ const fetchInitialData = (nextRouterState) => {
   store.dispatch(GetCompanies());
 };
 
-console.log(Home);
-console.log(App);
-console.log(singleDetailContainer);
-
 ReactDOM.render(
   <Provider store={store}>
     <Router history = {browserHistory}>
       <Route path = "/" component = {App} onEnter = {fetchInitialData}>
-        <IndexRoute component = {Home} />
-        <Route path="/:companyId" component = {singleDetailContainer} />
+        <IndexRedirect to="companies" />
+        <Route path= "/companies" component = {Home} onEnter = {fetchInitialData} />
+        <Route path="/companies/:companyId" component = {singleDetailContainer} />
       </Route>
     </Router>
   </Provider>,
