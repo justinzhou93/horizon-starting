@@ -1,35 +1,35 @@
-'use strict';
-
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Router, Route, hashHistory, IndexRedirect} from 'react-router';
 import { Provider } from 'react-redux';
 import store from './store';
+import { connect } from 'react-redux';
+import {Router, Route, IndexRoute, browserHistory} from 'react-router';
 
+/* -----------------   IMPORTED COMPONENTS   ------------------ */
+
+import Home from './containers/homeContainer';
 import App from './components/App';
-import AllPuppiesContainer from './containers/AllPuppiesContainer';
-import SinglePuppyContainer from './containers/SinglePuppyContainer';
+import singleDetailContainer from './containers/singleDetailContainer';
 
-import {getPuppiesFromServer} from './action-creators/puppies';
-import {getPuppyFromServer} from './action-creators/singlepuppy';
+/* -----------------  THUNK ACTION CREATORS   ------------------ */
 
-/** onEnter hooks for routes */
-const onAppEnter = (nextRouterState) => {
-  store.dispatch(getPuppiesFromServer());
+import {GetCompanies} from './action-creators/company';
+
+
+const fetchInitialData = (nextRouterState) => {
+  store.dispatch(GetCompanies());
 };
 
-const onSinglePuppyEnter = (nextRouterState) => {
-  store.dispatch(getPuppyFromServer(nextRouterState.params.puppyId));
-}
+console.log(Home);
+console.log(App);
+console.log(singleDetailContainer);
 
-/** Routes */
 ReactDOM.render(
   <Provider store={store}>
-    <Router history={hashHistory}>
-      <Route path="/" component={App} onEnter={onAppEnter}>
-        <Route path="/puppies" component={AllPuppiesContainer} />
-        <Route path="/puppies/:puppyId" component={SinglePuppyContainer} onEnter={onSinglePuppyEnter} />
-        <IndexRedirect to="/puppies" />
+    <Router history = {browserHistory}>
+      <Route path = "/" component = {App} onEnter = {fetchInitialData}>
+        <IndexRoute component = {Home} />
+        <Route path="/:companyId" component = {singleDetailContainer} />
       </Route>
     </Router>
   </Provider>,
