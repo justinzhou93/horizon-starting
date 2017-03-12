@@ -8,6 +8,10 @@ export class Home extends React.Component {
     super(props);
   }
 
+  componentDidMount(){
+    d3.selectAll('svg').remove();
+  }
+
   render(){
     return (
       <div className="wrapper">

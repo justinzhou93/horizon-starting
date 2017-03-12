@@ -66,11 +66,11 @@
 	
 	var _homeContainer2 = _interopRequireDefault(_homeContainer);
 	
-	var _App = __webpack_require__(307);
+	var _App = __webpack_require__(306);
 	
 	var _App2 = _interopRequireDefault(_App);
 	
-	var _singleDetailContainer = __webpack_require__(308);
+	var _singleDetailContainer = __webpack_require__(307);
 	
 	var _singleDetailContainer2 = _interopRequireDefault(_singleDetailContainer);
 	
@@ -104,9 +104,9 @@
 	    _react2.default.createElement(
 	      _reactRouter.Route,
 	      { path: '/', component: _App2.default, onEnter: fetchInitialData },
-	      _react2.default.createElement(_reactRouter.IndexRedirect, { to: 'companies' }),
-	      _react2.default.createElement(_reactRouter.Route, { path: '/companies', component: _homeContainer2.default, onEnter: fetchInitialData }),
-	      _react2.default.createElement(_reactRouter.Route, { path: '/companies/:companyId', component: _singleDetailContainer2.default, onEnter: fetchCurrentCompany })
+	      _react2.default.createElement(_reactRouter.Route, { path: 'companies', component: _homeContainer2.default, onEnter: fetchInitialData }),
+	      _react2.default.createElement(_reactRouter.Route, { path: 'companies/:companyId', component: _singleDetailContainer2.default, onEnter: fetchCurrentCompany }),
+	      _react2.default.createElement(_reactRouter.IndexRoute, { component: _homeContainer2.default })
 	    )
 	  )
 	), document.getElementById('app'));
@@ -31412,6 +31412,11 @@
 	  }
 	
 	  _createClass(Home, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      d3.selectAll('svg').remove();
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var _this2 = this;
@@ -31457,8 +31462,7 @@
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(Home);
 
 /***/ },
-/* 306 */,
-/* 307 */
+/* 306 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -31485,7 +31489,7 @@
 	}
 
 /***/ },
-/* 308 */
+/* 307 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -31540,7 +31544,7 @@
 	            // of the wordCloud return value.
 	            update: function update(words) {
 	                d3.layout.cloud().size([500, 500]).words(words).padding(5).rotate(function () {
-	                    return ~~(Math.random() * 2) * 90;
+	                    return 0;
 	                }).font("Impact").fontSize(function (d) {
 	                    return d.size;
 	                }).on("end", draw).start();
@@ -31559,7 +31563,7 @@
 	        // vis.update(getWords(i ++ % words.length))
 	        var unparsedWords = props.currentCompany._source.words;
 	        var parsedWords = Object.keys(unparsedWords).filter(function (key) {
-	            return !stopwords.includes(key.toLowerCase);
+	            return !stopwords.includes(key.toLowerCase());
 	        }).map(function (key) {
 	            var scaled = unparsedWords[key] * 10;
 	            return { 'text': key, 'size': scaled };

@@ -27,7 +27,7 @@ router.get('/', (req, res, next) => {
   });
 
   client.search({
-    index: `trends-${'201703111'}`,
+    index: `trends-${'201703124'}`,
     size: 5,
   }).then(function (resp) {
       if (resp) {

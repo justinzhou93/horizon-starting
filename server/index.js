@@ -52,7 +52,7 @@ function configureElastic() {
     } else {
       console.log('All is well');
 
-      const indexName = `news-${nowISO() + '-4'}`;
+      const indexName = `news-${nowISO() + '-3'}`;
 
       client.indices.create({
         index: indexName
@@ -125,8 +125,8 @@ function elasticsearchReady(client, indexName) {
         topFive.sort(function(a, b) {
           return b.response.meta.hits - a.response.meta.hits;
         });
-        if (topFive.length > 2) {
-          topFive = topFive.slice(0, 2);
+        if (topFive.length > 5) {
+          topFive = topFive.slice(0, 5);
         }
 
       });
@@ -171,7 +171,7 @@ function elasticsearchReady(client, indexName) {
         });
         console.log('eeeeeerrre', top)
         //input frequencies and topFive to Elasticsearch
-        indexName = `trends-${nowISO() + '1'}`;
+        indexName = `trends-${nowISO() + '4'}`;
         client.index({
           index: indexName,
           type: 'article',

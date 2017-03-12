@@ -31,10 +31,10 @@ const fetchCurrentCompany = (nextRouterState) => {
 ReactDOM.render(
   <Provider store={store}>
     <Router history = {browserHistory}>
-      <Route path = "/" component = {App} onEnter = {fetchInitialData}>
-        <IndexRedirect to="companies" />
-        <Route path= "/companies" component = {Home} onEnter = {fetchInitialData} />
-        <Route path="/companies/:companyId" component = {singleDetailContainer} onEnter = {fetchCurrentCompany} />
+      <Route path = "/" component = {App} onEnter = {fetchInitialData} >
+        <Route path= "companies" component = {Home} onEnter = {fetchInitialData} />
+        <Route path="companies/:companyId" component = {singleDetailContainer} onEnter = {fetchCurrentCompany} />
+        <IndexRoute component = {Home} />
       </Route>
     </Router>
   </Provider>,

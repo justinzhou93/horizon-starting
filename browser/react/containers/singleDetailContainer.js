@@ -55,7 +55,7 @@ function singleCompany(props){
               d3.layout.cloud().size([500, 500])
                   .words(words)
                   .padding(5)
-                  .rotate(function() { return ~~(Math.random() * 2) * 90; })
+                  .rotate(function() { return 0 })
                   .font("Impact")
                   .fontSize(function(d) { return d.size; })
                   .on("end", draw)
@@ -75,10 +75,10 @@ function singleCompany(props){
       // vis.update(getWords(i ++ % words.length))
       var unparsedWords = props.currentCompany._source.words;
       var parsedWords = Object.keys(unparsedWords).filter(key => {
-        return !stopwords.includes(key.toLowerCase);
+        return !stopwords.includes(key.toLowerCase());
       }).map(key => {
           var scaled = unparsedWords[key] * 10;
-          return {'text': key, 'size': scaled}
+          return {'text': key, 'size': scaled};
       });
       console.log(parsedWords);
       vis.update(parsedWords);
