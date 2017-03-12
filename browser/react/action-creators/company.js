@@ -24,19 +24,9 @@ export const settingCompanies = (companies) => {
 // load all products
 export const GetCompanies = () => {
     return dispatch => {
-        axios.get('/api/articles/companies')
+        axios.get('/api/trend/')
             .then((companies => companies.data))
-            .then(companies => dispatch(settingCompanies(companies)))
+            .then(companies => dispatch(settingCompanies(companies.hits.hits)))
             .then();
-    };
-};
-
-// loads single product
-export const loadSingleCompanyInfo = () => {
-    return dispatch => {
-      // TODO ACTION THUNK CREATOR NEEDED
-        // axios.get()
-        //     .then((res => res.data))
-        //     .then(product => dispatch(setSingleProduct(product)));
     };
 };

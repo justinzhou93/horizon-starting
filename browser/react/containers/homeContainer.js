@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import singleCompany from '../components/singleCompany';
 import {settingCurrentCompany} from '../action-creators/company';
+import {Link} from 'react-router';
 
 export class Home extends React.Component {
   constructor(props){
@@ -14,13 +14,11 @@ export class Home extends React.Component {
         {
           this.props.companies && this.props.companies.map(company => {
             var self = this;
+            console.log(company);
             return (
-              <singleCompany key={company.id} company={company} handleSelect={
-                function(){
-                  self.props.selectingCompany(self.props.currentCompany, company)
-                }
-              }
-              />
+              <div>
+                <Link to={`/companies/${company._id}`}>{company._source.company}</Link>
+              </div>
             )
           })
         }
