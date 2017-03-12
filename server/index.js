@@ -52,7 +52,7 @@ function configureElastic() {
     } else {
       console.log('All is well');
 
-      const indexName = `news-${nowISO() + '-3'}`;
+      const indexName = `news-${nowISO() + '-4'}`;
 
       client.indices.create({
         index: indexName
@@ -171,7 +171,7 @@ function elasticsearchReady(client, indexName) {
         });
         console.log('eeeeeerrre', top)
         //input frequencies and topFive to Elasticsearch
-        indexName = `trends-${nowISO() + '4'}`;
+        indexName = `trends-${nowISO() + '5'}`;
         client.index({
           index: indexName,
           type: 'article',
