@@ -1,9 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
+import { Provider, connect } from 'react-redux';
 import store from './store';
-import { connect } from 'react-redux';
-import {Router, Route, IndexRoute, browserHistory} from 'react-router';
+import {Router, Route, IndexRoute, IndexRedirect, browserHistory} from 'react-router';
 
 /* -----------------   IMPORTED COMPONENTS   ------------------ */
 
@@ -13,23 +12,29 @@ import singleDetailContainer from './containers/singleDetailContainer';
 
 /* -----------------  THUNK ACTION CREATORS   ------------------ */
 
-import {GetCompanies} from './action-creators/company';
+import {GetCompanies, settingCurrentCompany} from './action-creators/company';
 
 
 const fetchInitialData = (nextRouterState) => {
   store.dispatch(GetCompanies());
 };
 
-console.log(Home);
-console.log(App);
-console.log(singleDetailContainer);
+const fetchCurrentCompany = (nextRouterState) => {
+  var foundCompany = store.getState().company.companies.filter(function(company){
+    return company._id === nextRouterState.params.companyId;
+  });
+  if (foundCompany.length > 0) {
+    store.dispatch(settingCurrentCompany(foundCompany[0]));
+  }
+};
 
 ReactDOM.render(
   <Provider store={store}>
     <Router history = {browserHistory}>
-      <Route path = "/" component = {App} onEnter = {fetchInitialData}>
+      <Route path = "/" component = {App} onEnter = {fetchInitialData} >
+        <Route path= "companies" component = {Home} onEnter = {fetchInitialData} />
+        <Route path="companies/:companyId" component = {singleDetailContainer} onEnter = {fetchCurrentCompany} />
         <IndexRoute component = {Home} />
-        <Route path="/:companyId" component = {singleDetailContainer} />
       </Route>
     </Router>
   </Provider>,

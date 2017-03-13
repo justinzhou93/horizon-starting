@@ -24,21 +24,9 @@ export const settingCompanies = (companies) => {
 // load all products
 export const GetCompanies = () => {
     return dispatch => {
-        console.log('first thnuk');
-        // axios.get('/api/articles/companies')
-        //     .then((companies => companies.data))
-        //     .then(companies => dispatch(settingCurrentCompany(companies)))
-        //     .then();
-    };
-};
-
-// loads single product
-export const loadSingleCompanyInfo = () => {
-    return dispatch => {
-      console.log('second thnuk');
-      // TODO ACTION THUNK CREATOR NEEDED
-        // axios.get()
-        //     .then((res => res.data))
-        //     .then(product => dispatch(setSingleProduct(product)));
+        axios.get('/api/trend/')
+            .then((companies => companies.data))
+            .then(companies => dispatch(settingCompanies(companies.hits.hits)))
+            .then();
     };
 };

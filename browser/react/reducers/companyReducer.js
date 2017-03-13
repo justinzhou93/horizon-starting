@@ -4,7 +4,7 @@ import { SET_CURRENT_COMPANY, SET_COMPANIES } from '../action-creators/company';
 /** Initial State */
 const initialProductState = {
     companies: [], //array of companies, which will be objects
-    currentCompany: {}
+    currentCompany: null
 };
 
 /** Products reducer */
@@ -18,7 +18,7 @@ export default function (state = initialProductState, action) {
             break;
 
         case SET_COMPANIES:
-            newState.currentProduct = action.currentProduct;
+            newState.companies = action.companies;
             break;
 
         default:

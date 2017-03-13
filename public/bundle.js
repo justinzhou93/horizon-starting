@@ -66,11 +66,11 @@
 	
 	var _homeContainer2 = _interopRequireDefault(_homeContainer);
 	
-	var _App = __webpack_require__(307);
+	var _App = __webpack_require__(306);
 	
 	var _App2 = _interopRequireDefault(_App);
 	
-	var _singleDetailContainer = __webpack_require__(308);
+	var _singleDetailContainer = __webpack_require__(307);
 	
 	var _singleDetailContainer2 = _interopRequireDefault(_singleDetailContainer);
 	
@@ -86,9 +86,14 @@
 	
 	/* -----------------  THUNK ACTION CREATORS   ------------------ */
 	
-	console.log(_homeContainer2.default);
-	console.log(_App2.default);
-	console.log(_singleDetailContainer2.default);
+	var fetchCurrentCompany = function fetchCurrentCompany(nextRouterState) {
+	  var foundCompany = _store2.default.getState().company.companies.filter(function (company) {
+	    return company._id === nextRouterState.params.companyId;
+	  });
+	  if (foundCompany.length > 0) {
+	    _store2.default.dispatch((0, _company.settingCurrentCompany)(foundCompany[0]));
+	  }
+	};
 	
 	_reactDom2.default.render(_react2.default.createElement(
 	  _reactRedux.Provider,
@@ -99,8 +104,9 @@
 	    _react2.default.createElement(
 	      _reactRouter.Route,
 	      { path: '/', component: _App2.default, onEnter: fetchInitialData },
-	      _react2.default.createElement(_reactRouter.IndexRoute, { component: _homeContainer2.default }),
-	      _react2.default.createElement(_reactRouter.Route, { path: '/:companyId', component: _singleDetailContainer2.default })
+	      _react2.default.createElement(_reactRouter.Route, { path: 'companies', component: _homeContainer2.default, onEnter: fetchInitialData }),
+	      _react2.default.createElement(_reactRouter.Route, { path: 'companies/:companyId', component: _singleDetailContainer2.default, onEnter: fetchCurrentCompany }),
+	      _react2.default.createElement(_reactRouter.IndexRoute, { component: _homeContainer2.default })
 	    )
 	  )
 	), document.getElementById('app'));
@@ -23361,7 +23367,7 @@
 	            break;
 	
 	        case _company.SET_COMPANIES:
-	            newState.currentProduct = action.currentProduct;
+	            newState.companies = action.companies;
 	            break;
 	
 	        default:
@@ -23376,7 +23382,7 @@
 	/** Initial State */
 	var initialProductState = {
 	    companies: [], //array of companies, which will be objects
-	    currentCompany: {}
+	    currentCompany: null
 	};
 	
 	/** Products reducer */
@@ -23391,7 +23397,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	exports.loadSingleCompanyInfo = exports.GetCompanies = exports.settingCompanies = exports.settingCurrentCompany = exports.SET_COMPANIES = exports.SET_CURRENT_COMPANY = undefined;
+	exports.GetCompanies = exports.settingCompanies = exports.settingCurrentCompany = exports.SET_COMPANIES = exports.SET_CURRENT_COMPANY = undefined;
 	
 	var _axios = __webpack_require__(212);
 	
@@ -23425,22 +23431,11 @@
 	// load all products
 	var GetCompanies = exports.GetCompanies = function GetCompanies() {
 	    return function (dispatch) {
-	        console.log('first thnuk');
-	        // axios.get('/api/articles/companies')
-	        //     .then((companies => companies.data))
-	        //     .then(companies => dispatch(settingCurrentCompany(companies)))
-	        //     .then();
-	    };
-	};
-	
-	// loads single product
-	var loadSingleCompanyInfo = exports.loadSingleCompanyInfo = function loadSingleCompanyInfo() {
-	    return function (dispatch) {
-	        console.log('second thnuk');
-	        // TODO ACTION THUNK CREATOR NEEDED
-	        // axios.get()
-	        //     .then((res => res.data))
-	        //     .then(product => dispatch(setSingleProduct(product)));
+	        _axios2.default.get('/api/trend/').then(function (companies) {
+	            return companies.data;
+	        }).then(function (companies) {
+	            return dispatch(settingCompanies(companies.hits.hits));
+	        }).then();
 	    };
 	};
 
@@ -31395,11 +31390,9 @@
 	
 	var _reactRedux = __webpack_require__(178);
 	
-	var _singleCompany = __webpack_require__(306);
-	
-	var _singleCompany2 = _interopRequireDefault(_singleCompany);
-	
 	var _company = __webpack_require__(211);
+	
+	var _reactRouter = __webpack_require__(237);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -31419,16 +31412,30 @@
 	  }
 	
 	  _createClass(Home, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      d3.selectAll('svg').remove();
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
+	      var _this2 = this;
+	
 	      return _react2.default.createElement(
 	        'div',
 	        { className: 'wrapper' },
 	        this.props.companies && this.props.companies.map(function (company) {
-	          return _react2.default.createElement('singleCompany', { key: company.id, company: company, handleSelect: function handleSelect() {
-	              this.props.selectingCompany(this.props.currentCompany, company);
-	            }
-	          });
+	          var self = _this2;
+	          console.log(company);
+	          return _react2.default.createElement(
+	            'div',
+	            null,
+	            _react2.default.createElement(
+	              _reactRouter.Link,
+	              { to: '/companies/' + company._id },
+	              company._source.company
+	            )
+	          );
 	        })
 	      );
 	    }
@@ -31438,13 +31445,16 @@
 	}(_react2.default.Component);
 	
 	var mapStateToProps = function mapStateToProps(state) {
-	  return { currentCompany: state.currentCompany };
+	  return {
+	    currentCompany: state.company.currentCompany,
+	    companies: state.company.companies
+	  };
 	};
 	
 	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
 	  return {
 	    selectingCompany: function selectingCompany(currentCompany, newCompany) {
-	      return dispatch((0, _company.selectCompany)(currentCompany, newCompany));
+	      return dispatch((0, _company.settingCurrentCompany)(currentCompany, newCompany));
 	    }
 	  };
 	};
@@ -31455,35 +31465,34 @@
 /* 306 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	
-	exports.default = function (props) {
-	  return _react2.default.createElement(
-	    'div',
-	    { clickHandle: props.handleSelect },
-	    _react2.default.createElement(
-	      'a',
-	      { onClick: props.handleSelect },
-	      props.company.name
-	    )
-	  );
-	};
+	exports.default = App;
 	
 	var _react = __webpack_require__(1);
 	
 	var _react2 = _interopRequireDefault(_react);
-
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function App(_ref) {
+	  var children = _ref.children;
+	
+	  return _react2.default.createElement(
+	    "div",
+	    { id: "main" },
+	    children
+	  );
+	}
 
 /***/ },
 /* 307 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -31493,103 +31502,97 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
+	var _reactRedux = __webpack_require__(178);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	exports.default = function (_ref) {
-	    var children = _ref.children;
+	function singleCompany(props) {
+	    function wordCloud(selector) {
+	        var fill = d3.scale.category20();
+	        //Construct the word cloud's SVG element
+	        var svg = d3.select(selector).append("svg").attr("width", 500).attr("height", 500).append("g").attr("transform", "translate(250,250)");
+	        //Draw the word cloud
+	        function draw(words) {
+	            var cloud = svg.selectAll("g text").data(words, function (d) {
+	                return d.text;
+	            });
+	            //Entering words
+	            cloud.enter().append("text").style("font-family", "Impact").style("fill", function (d, i) {
+	                return fill(i);
+	            }).attr("text-anchor", "middle").attr('font-size', 1).text(function (d) {
+	                return d.text;
+	            });
+	
+	            //Entering and existing words
+	            cloud.transition().duration(600).style("font-size", function (d) {
+	                return d.size + "px";
+	            }).attr("transform", function (d) {
+	                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+	            }).style("fill-opacity", 1);
+	
+	            //Exiting words
+	            cloud.exit().transition().duration(200).style('fill-opacity', 1e-6).attr('font-size', 1).remove();
+	        }
+	
+	        //Use the module pattern to encapsulate the visualisation code. We'll
+	        // expose only the parts that need to be public.
+	        return {
+	
+	            //Recompute the word cloud for a new set of words. This method will
+	            // asycnhronously call draw when the layout has been computed.
+	            //The outside world will need to call this function, so make it part
+	            // of the wordCloud return value.
+	            update: function update(words) {
+	                d3.layout.cloud().size([500, 500]).words(words).padding(5).rotate(function () {
+	                    return 0;
+	                }).font("Impact").fontSize(function (d) {
+	                    return d.size;
+	                }).on("end", draw).start();
+	            }
+	        };
+	    }
+	
+	    //This method tells the word cloud to redraw with a new set of words.
+	    //In reality the new words would probably come from a server request,
+	    // user input or some other source.
+	
+	    var stopwords = ['a', 'able', 'about', 'above', 'abroad', 'according', 'accordingly', 'across', 'actually', 'adj', 'after', 'afterwards', 'again', 'against', 'ago', 'ahead', 'ain\'t', 'all', 'allow', 'allows', 'almost', 'alone', 'along', 'alongside', 'already', 'also', 'although', 'always', 'am', 'amid', 'amidst', 'among', 'amongst', 'an', 'and', 'another', 'any', 'anybody', 'anyhow', 'anyone', 'anything', 'anyway', 'anyways', 'anywhere', 'apart', 'appear', 'appreciate', 'appropriate', 'are', 'aren\'t', 'around', 'as', 'a\'s', 'aside', 'ask', 'asking', 'associated', 'at', 'available', 'away', 'awfully', 'b', 'back', 'backward', 'backwards', 'be', 'became', 'because', 'become', 'becomes', 'becoming', 'been', 'before', 'beforehand', 'begin', 'behind', 'being', 'believe', 'below', 'beside', 'besides', 'best', 'better', 'between', 'beyond', 'both', 'brief', 'but', 'by', 'c', 'came', 'can', 'cannot', 'cant', 'can\'t', 'caption', 'cause', 'causes', 'certain', 'certainly', 'changes', 'clearly', 'c\'mon', 'co', 'co.', 'com', 'come', 'comes', 'concerning', 'consequently', 'consider', 'considering', 'contain', 'containing', 'contains', 'corresponding', 'could', 'couldn\'t', 'course', 'c\'s', 'currently', 'd', 'dare', 'daren\'t', 'definitely', 'described', 'despite', 'did', 'didn\'t', 'different', 'directly', 'do', 'does', 'doesn\'t', 'doing', 'done', 'don\'t', 'down', 'downwards', 'during', 'e', 'each', 'edu', 'eg', 'eight', 'eighty', 'either', 'else', 'elsewhere', 'end', 'ending', 'enough', 'entirely', 'especially', 'et', 'etc', 'even', 'ever', 'evermore', 'every', 'everybody', 'everyone', 'everything', 'everywhere', 'ex', 'exactly', 'example', 'except', 'f', 'fairly', 'far', 'farther', 'few', 'fewer', 'fifth', 'first', 'five', 'followed', 'following', 'follows', 'for', 'forever', 'former', 'formerly', 'forth', 'forward', 'found', 'four', 'from', 'further', 'furthermore', 'g', 'get', 'gets', 'getting', 'given', 'gives', 'go', 'goes', 'going', 'gone', 'got', 'gotten', 'greetings', 'h', 'had', 'hadn\'t', 'half', 'happens', 'hardly', 'has', 'hasn\'t', 'have', 'haven\'t', 'having', 'he', 'he\'d', 'he\'ll', 'hello', 'help', 'hence', 'her', 'here', 'hereafter', 'hereby', 'herein', 'here\'s', 'hereupon', 'hers', 'herself', 'he\'s', 'hi', 'him', 'himself', 'his', 'hither', 'hopefully', 'how', 'howbeit', 'however', 'hundred', 'i', 'i\'d', 'ie', 'if', 'ignored', 'i\'ll', 'i\'m', 'immediate', 'in', 'inasmuch', 'inc', 'inc.', 'indeed', 'indicate', 'indicated', 'indicates', 'inner', 'inside', 'insofar', 'instead', 'into', 'inward', 'is', 'isn\'t', 'it', 'it\'d', 'it\'ll', 'its', 'it\'s', 'itself', 'i\'ve', 'j', 'just', 'k', 'keep', 'keeps', 'kept', 'know', 'known', 'knows', 'l', 'last', 'lately', 'later', 'latter', 'latterly', 'least', 'less', 'lest', 'let', 'let\'s', 'like', 'liked', 'likely', 'likewise', 'little', 'look', 'looking', 'looks', 'low', 'lower', 'ltd', 'm', 'made', 'mainly', 'make', 'makes', 'many', 'may', 'maybe', 'mayn\'t', 'me', 'mean', 'meantime', 'meanwhile', 'merely', 'might', 'mightn\'t', 'mine', 'minus', 'miss', 'more', 'moreover', 'most', 'mostly', 'mr', 'mrs', 'much', 'must', 'mustn\'t', 'my', 'myself', 'n', 'name', 'namely', 'nd', 'near', 'nearly', 'necessary', 'need', 'needn\'t', 'needs', 'neither', 'never', 'neverf', 'neverless', 'nevertheless', 'new', 'next', 'nine', 'ninety', 'no', 'nobody', 'non', 'none', 'nonetheless', 'noone', 'no-one', 'nor', 'normally', 'not', 'nothing', 'notwithstanding', 'novel', 'now', 'nowhere', 'o', 'obviously', 'of', 'off', 'often', 'oh', 'ok', 'okay', 'old', 'on', 'once', 'one', 'ones', 'one\'s', 'only', 'onto', 'opposite', 'or', 'other', 'others', 'otherwise', 'ought', 'oughtn\'t', 'our', 'ours', 'ourselves', 'out', 'outside', 'over', 'overall', 'own', 'p', 'particular', 'particularly', 'past', 'per', 'perhaps', 'placed', 'please', 'plus', 'possible', 'presumably', 'probably', 'provided', 'provides', 'q', 'que', 'quite', 'qv', 'r', 'rather', 'rd', 're', 'really', 'reasonably', 'recent', 'recently', 'regarding', 'regardless', 'regards', 'relatively', 'respectively', 'right', 'round', 's', 'said', 'same', 'saw', 'say', 'saying', 'says', 'second', 'secondly', 'see', 'seeing', 'seem', 'seemed', 'seeming', 'seems', 'seen', 'self', 'selves', 'sensible', 'sent', 'serious', 'seriously', 'seven', 'several', 'shall', 'shan\'t', 'she', 'she\'d', 'she\'ll', 'she\'s', 'should', 'shouldn\'t', 'since', 'six', 'so', 'some', 'somebody', 'someday', 'somehow', 'someone', 'something', 'sometime', 'sometimes', 'somewhat', 'somewhere', 'soon', 'sorry', 'specified', 'specify', 'specifying', 'still', 'sub', 'such', 'sup', 'sure', 't', 'take', 'taken', 'taking', 'tell', 'tends', 'th', 'than', 'thank', 'thanks', 'thanx', 'that', 'that\'ll', 'thats', 'that\'s', 'that\'ve', 'the', 'their', 'theirs', 'them', 'themselves', 'then', 'thence', 'there', 'thereafter', 'thereby', 'there\'d', 'therefore', 'therein', 'there\'ll', 'there\'re', 'theres', 'there\'s', 'thereupon', 'there\'ve', 'these', 'they', 'they\'d', 'they\'ll', 'they\'re', 'they\'ve', 'thing', 'things', 'think', 'third', 'thirty', 'this', 'thorough', 'thoroughly', 'those', 'though', 'three', 'through', 'throughout', 'thru', 'thus', 'till', 'to', 'together', 'too', 'took', 'toward', 'towards', 'tried', 'tries', 'truly', 'try', 'trying', 't\'s', 'twice', 'two', 'u', 'un', 'under', 'underneath', 'undoing', 'unfortunately', 'unless', 'unlike', 'unlikely', 'until', 'unto', 'up', 'upon', 'upwards', 'us', 'use', 'used', 'useful', 'uses', 'using', 'usually', 'v', 'value', 'various', 'versus', 'very', 'via', 'viz', 'vs', 'w', 'want', 'wants', 'was', 'wasn\'t', 'way', 'we', 'we\'d', 'welcome', 'well', 'we\'ll', 'went', 'were', 'we\'re', 'weren\'t', 'we\'ve', 'what', 'whatever', 'what\'ll', 'what\'s', 'what\'ve', 'when', 'whence', 'whenever', 'where', 'whereafter', 'whereas', 'whereby', 'wherein', 'where\'s', 'whereupon', 'wherever', 'whether', 'which', 'whichever', 'while', 'whilst', 'whither', 'who', 'who\'d', 'whoever', 'whole', 'who\'ll', 'whom', 'whomever', 'who\'s', 'whose', 'why', 'will', 'willing', 'wish', 'with', 'within', 'without', 'wonder', 'won\'t', 'would', 'wouldn\'t', 'x', 'y', 'yes', 'yet', 'you', 'you\'d', 'you\'ll', 'your', 'you\'re', 'yours', 'yourself', 'yourselves', 'you\'ve', 'z', 'zero'];
+	    function showNewWords(vis, i) {
+	        i = i || 0;
+	
+	        // vis.update(getWords(i ++ % words.length))
+	        var unparsedWords = props.currentCompany._source.words;
+	        var parsedWords = Object.keys(unparsedWords).filter(function (key) {
+	            return !stopwords.includes(key.toLowerCase());
+	        }).map(function (key) {
+	            var scaled = unparsedWords[key] * 10;
+	            return { 'text': key, 'size': scaled };
+	        });
+	        console.log(parsedWords);
+	        vis.update(parsedWords);
+	        // setTimeout(function() { showNewWords(vis, i + 1)}, 2000)
+	    }
+	
+	    //Create a new instance of the word cloud visualisation.
+	    var myWordCloud = wordCloud('body');
+	
 	    return _react2.default.createElement(
-	        "div",
-	        { id: "main" },
-	        children
+	        'div',
+	        null,
+	        showNewWords(myWordCloud)
 	    );
-	};
-
-/***/ },
-/* 308 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
+	}
+	// import WordCloud from '../components/singleDetailComponents/wordCloud';
 	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
 	
-	exports.default = function (props) {
-	
-	  return 'hi';
-	  // return (
-	  //   <div>
-	  //     <wordCloud words={props.currentCompany.words} />
-	  //     <stockTracker ticker={props.currentCompany.ticker} />
-	  //   </div>
-	  // );
+	var mapStateToProps = function mapStateToProps(state) {
+	    return {
+	        currentCompany: state.company.currentCompany,
+	        companies: state.company.companies
+	    };
 	};
 	
-	var _react = __webpack_require__(1);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	var _stockTracker = __webpack_require__(309);
-	
-	var _stockTracker2 = _interopRequireDefault(_stockTracker);
-	
-	var _wordCloud = __webpack_require__(310);
-	
-	var _wordCloud2 = _interopRequireDefault(_wordCloud);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/***/ },
-/* 309 */
-/***/ function(module, exports) {
-
-	//TODO need to implement stock ticker api
-	"use strict";
-
-/***/ },
-/* 310 */
-/***/ function(module, exports) {
-
-	// import Canvas from 'canvas';
-	// import React from 'react';
-	// import d3 from 'd3';
-	//
-	// var words = [
-	//   "Hello", "world", "normally", "you", "want", "more", "words",
-	//   "than", "this"]
-	//
-	// var cloud = d3.layout.cloud()
-	//     .size([500, 500])
-	//     .words(words.map(function(d) {
-	//       return {text: d, size: 10 + Math.random() * 90, test: "haha"};
-	//     }))
-	//     .padding(5)
-	//     .font('Times New Roman')
-	//     .fontSize(function(d) { return d.size; })
-	//     .on("end", draw);
-	//
-	// const draw = function(){
-	//   d3.select('body').append('svg')
-	//       .attr("width", layout.size()[0])
-	//       .attr("height", layout.size()[1])
-	//       .append("g")
-	//       .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
-	//       .selectAll("text")
-	//       .data(words)
-	//       .enter().append("text")
-	//       .style("font-size", function(d) { return d.size + "px"; })
-	//       .style("font-family", "Impact")
-	//       .style("fill", function(d, i) { return fill(i); })
-	//       .attr("text-anchor", "middle")
-	//       .text(function(d) { return d.text; });
-	// }
-	//
-	// export default function(){
-	//   return (
-	//     cloud()
-	//   );
-	// }
-	"use strict";
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, null)(singleCompany);
 
 /***/ }
 /******/ ]);
