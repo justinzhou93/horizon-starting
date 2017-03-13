@@ -31504,8 +31504,13 @@
 	
 	var _reactRedux = __webpack_require__(178);
 	
+	var _reactAddonsCreateFragment = __webpack_require__(308);
+	
+	var _reactAddonsCreateFragment2 = _interopRequireDefault(_reactAddonsCreateFragment);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
+	// import WordCloud from '../components/singleDetailComponents/wordCloud';
 	function singleCompany(props) {
 	    function wordCloud(selector) {
 	        var fill = d3.scale.category20();
@@ -31537,7 +31542,6 @@
 	        //Use the module pattern to encapsulate the visualisation code. We'll
 	        // expose only the parts that need to be public.
 	        return {
-	
 	            //Recompute the word cloud for a new set of words. This method will
 	            // asycnhronously call draw when the layout has been computed.
 	            //The outside world will need to call this function, so make it part
@@ -31568,7 +31572,6 @@
 	            var scaled = unparsedWords[key] * 10;
 	            return { 'text': key, 'size': scaled };
 	        });
-	        console.log(parsedWords);
 	        vis.update(parsedWords);
 	        // setTimeout(function() { showNewWords(vis, i + 1)}, 2000)
 	    }
@@ -31576,14 +31579,27 @@
 	    //Create a new instance of the word cloud visualisation.
 	    var myWordCloud = wordCloud('body');
 	
+	    // var graph = TradingView.widget({
+	    //     "width": 500,
+	    //     "height": 400,
+	    //     "symbol": props.currentCompany._source.ticker,
+	    //     "interval": "D",
+	    //     "timezone": "America/New_York",
+	    //     "theme": "Black",
+	    //     "style": "3",
+	    //     "locale": "en",
+	    //     "toolbar_bg": "#f1f3f6",
+	    //     "enable_publishing": false,
+	    //     "allow_symbol_change": true,
+	    //     "hideideas": true
+	    //   });
+	
 	    return _react2.default.createElement(
 	        'div',
 	        null,
 	        showNewWords(myWordCloud)
 	    );
 	}
-	// import WordCloud from '../components/singleDetailComponents/wordCloud';
-	
 	
 	var mapStateToProps = function mapStateToProps(state) {
 	    return {
@@ -31593,6 +31609,86 @@
 	};
 	
 	exports.default = (0, _reactRedux.connect)(mapStateToProps, null)(singleCompany);
+
+/***/ },
+/* 308 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__(309).create;
+
+/***/ },
+/* 309 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {/**
+	 * Copyright 2015-present, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 */
+	
+	'use strict';
+	
+	var _prodInvariant = __webpack_require__(7);
+	
+	var ReactChildren = __webpack_require__(5);
+	var ReactElement = __webpack_require__(9);
+	
+	var emptyFunction = __webpack_require__(12);
+	var invariant = __webpack_require__(8);
+	var warning = __webpack_require__(11);
+	
+	/**
+	 * We used to allow keyed objects to serve as a collection of ReactElements,
+	 * or nested sets. This allowed us a way to explicitly key a set or fragment of
+	 * components. This is now being replaced with an opaque data structure.
+	 * The upgrade path is to call React.addons.createFragment({ key: value }) to
+	 * create a keyed fragment. The resulting data structure is an array.
+	 */
+	
+	var numericPropertyRegex = /^\d+$/;
+	
+	var warnedAboutNumeric = false;
+	
+	var ReactFragment = {
+	  /**
+	   * Wrap a keyed object in an opaque proxy that warns you if you access any
+	   * of its properties.
+	   * See https://facebook.github.io/react/docs/create-fragment.html
+	   */
+	  create: function (object) {
+	    if (typeof object !== 'object' || !object || Array.isArray(object)) {
+	      process.env.NODE_ENV !== 'production' ? warning(false, 'React.addons.createFragment only accepts a single object. Got: %s', object) : void 0;
+	      return object;
+	    }
+	    if (ReactElement.isValidElement(object)) {
+	      process.env.NODE_ENV !== 'production' ? warning(false, 'React.addons.createFragment does not accept a ReactElement ' + 'without a wrapper object.') : void 0;
+	      return object;
+	    }
+	
+	    !(object.nodeType !== 1) ? process.env.NODE_ENV !== 'production' ? invariant(false, 'React.addons.createFragment(...): Encountered an invalid child; DOM elements are not valid children of React components.') : _prodInvariant('0') : void 0;
+	
+	    var result = [];
+	
+	    for (var key in object) {
+	      if (process.env.NODE_ENV !== 'production') {
+	        if (!warnedAboutNumeric && numericPropertyRegex.test(key)) {
+	          process.env.NODE_ENV !== 'production' ? warning(false, 'React.addons.createFragment(...): Child objects should have ' + 'non-numeric keys so ordering is preserved.') : void 0;
+	          warnedAboutNumeric = true;
+	        }
+	      }
+	      ReactChildren.mapIntoWithKeyPrefixInternal(object[key], result, key, emptyFunction.thatReturnsArgument);
+	    }
+	
+	    return result;
+	  }
+	};
+	
+	module.exports = ReactFragment;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ }
 /******/ ]);

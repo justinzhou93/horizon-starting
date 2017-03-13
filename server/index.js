@@ -125,8 +125,9 @@ function elasticsearchReady(client, indexName) {
         topFive.sort(function(a, b) {
           return b.response.meta.hits - a.response.meta.hits;
         });
-        if (topFive.length > 5) {
-          topFive = topFive.slice(0, 5);
+        if (topFive.length > 10) {
+          topFive = topFive.slice(0, 10);
+          console.log('topFive', topFive);
         }
 
       });
@@ -188,8 +189,6 @@ function elasticsearchReady(client, indexName) {
             console.log('trends in elasticsearch');
           }
         });
-
-
 
       })
     })
