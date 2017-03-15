@@ -31429,7 +31429,7 @@
 	          console.log(company);
 	          return _react2.default.createElement(
 	            'div',
-	            null,
+	            { className: 'company-button' },
 	            _react2.default.createElement(
 	              _reactRouter.Link,
 	              { to: '/companies/' + company._id },
@@ -31596,7 +31596,8 @@
 	
 	    return _react2.default.createElement(
 	        'div',
-	        null,
+	        { className: 'wordcloud' },
+	        props.currentCompany._source.name,
 	        showNewWords(myWordCloud)
 	    );
 	}

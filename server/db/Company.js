@@ -8,7 +8,7 @@ var Company = db.define('company', {
   name: {
     type: Sequelize.STRING
   },
-  sector: {
+  imgURL: {
     type: Sequelize.STRING
   }
 }, {
