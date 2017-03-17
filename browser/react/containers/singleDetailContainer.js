@@ -102,8 +102,9 @@ function singleCompany(props){
   //   });
 
   return (
-    <div>
+    <div className="wordcloud">
         {/*graph*/}
+        {props.currentCompany._source.name}
         {showNewWords(myWordCloud)}
     </div>
   );

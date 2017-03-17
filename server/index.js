@@ -52,7 +52,7 @@ function configureElastic() {
     } else {
       console.log('All is well');
 
-      const indexName = `news-${nowISO() + '-4'}`;
+      const indexName = `news-${nowISO() + '-2'}`;
 
       client.indices.create({
         index: indexName
@@ -117,6 +117,7 @@ function elasticsearchReady(client, indexName) {
       results = results.map((result, index) => {
         result.companyName = companies[index].name;
         result.ticker = companies[index].ticker;
+        result.imgURL = companies[index].imgURL;
         return result;
       })
       results.forEach(result => {
@@ -125,8 +126,8 @@ function elasticsearchReady(client, indexName) {
         topFive.sort(function(a, b) {
           return b.response.meta.hits - a.response.meta.hits;
         });
-        if (topFive.length > 10) {
-          topFive = topFive.slice(0, 10);
+        if (topFive.length > 5) {
+          topFive = topFive.slice(0, 5);
           console.log('topFive', topFive);
         }
 
@@ -172,7 +173,7 @@ function elasticsearchReady(client, indexName) {
         });
         console.log('eeeeeerrre', top)
         //input frequencies and topFive to Elasticsearch
-        indexName = `trends-${nowISO() + '5'}`;
+        indexName = `trends-${nowISO() + '2'}`;
         client.index({
           index: indexName,
           type: 'article',
@@ -180,7 +181,7 @@ function elasticsearchReady(client, indexName) {
             company: top.companyName,
             words: wordFreq,
             ticker: top.ticker,
-
+            imgURL: top.imgURL
           }
         }, function(err, resp, status) {
           if (err) {

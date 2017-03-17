@@ -20,7 +20,7 @@ export class Home extends React.Component {
             var self = this;
             console.log(company);
             return (
-              <div>
+              <div className="company-button">
                 <Link to={`/companies/${company._id}`}>{company._source.company}</Link>
               </div>
             )
