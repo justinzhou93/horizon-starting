@@ -38,4 +38,5 @@ In our presentation, we give a walkthrough of the application, as well as go ove
 
 ## Contributors:
 
-*
+* https://github.com/jaekwangseo
+* https://github.com/justinzhou93
